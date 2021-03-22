@@ -1,0 +1,12 @@
+//defaults are usually 0/false, but there are some exceptions.
+properties.hardness= 0.0f-4.0f //0 is instant mine, 4 is unbreakable
+properties.light= 0.0f-15.0f //0 is no light at all, 15 is a shining explosion
+properties.solid=true|false //whether the block has geometry and other blocks may be placed on it
+
+//drops.def is used if no other drops are specified.
+drops.def|hands|hammer|drill.type=fluid|item
+drops.def|hands|hammer|drill.id=<fluid id>|<item id> //id of a fluid|item stored in data/cavehopper/fluids|items/<id>.properties. must match the drop type.
+drops.def|hands|hammer|drill.count=0-64 //for fluids, 64 is a full block
+
+//This only defines the block's default states, not its boundaries.
+states.up|right|down|left|on=true|false //if blank, defaults to false.
