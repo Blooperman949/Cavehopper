@@ -45,8 +45,8 @@ public class LevelRenderer
 		WorldPos camPos = new WorldPos((int) x, (int) y);
 		Chunk cc = null;
 		if(level.getChunks().containsKey(camPos.getChunk())) cc = level.getChunk(camPos);
-		String text = camPos.toString();
-		if (cc != null) text += " in " + new WorldPos(cc.getX(), cc.getY()).toString();
+		String text = "World: " + camPos.toString();
+		if (cc != null) text += " Chunk: " + new WorldPos(cc.getX(), cc.getY()).toString() + ", " + new WorldPos(camPos.getPosInChunk());
 		if (cc != null && cc.getBlocks().containsKey(camPos.getPosInChunk())) text += " Block: " + cc.getBlock(camPos.getPosInChunk()).getId();
 		g.drawString(text, w/3+5, h/3+15);
 		return out;

@@ -70,7 +70,7 @@ public class Cavehopper
 	
 	void tick()
 	{
-		float speed = 0.8f;
+		float speed = 1.0f;
 		if (gw.getKeyDown(16)) speed = 6.0f;
 		if (gw.getKeyDown(87)) level.getLevelRenderer().getCamera().removeY(speed);
 		if (gw.getKeyDown(83)) level.getLevelRenderer().getCamera().addY(speed);

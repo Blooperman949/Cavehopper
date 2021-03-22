@@ -31,7 +31,7 @@ public class ChunkGenerator
 					else block = blocks.get("crumbrock");
 				}
 				else block = blocks.get("silt");
-//				if (j == 0 && i == 0) block = blocks.get("air");
+				if (j == 0 && i == 0) block = blocks.get("vulrock");
 				chunk.setBlock(pos, new Block(block, i, j));
 			}
 		}

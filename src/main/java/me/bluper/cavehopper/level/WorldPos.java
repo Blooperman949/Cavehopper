@@ -12,9 +12,20 @@ public class WorldPos extends Point
 		this.y = y;
 	}
 	
+	public WorldPos(Point pos)
+	{
+		this.x = pos.x;
+		this.y = pos.y;
+	}
+	
 	public Point getPosInChunk()
 	{
-		return new Point(x%32, y%32);
+		int x, y;
+		x = this.x < 0 ? this.x%-32+32 : this.x%32;
+		y = this.y < 0 ? this.y%-32+32 : this.y%32;
+		if (x == 32) x = 0;
+		if (y == 32) y = 0;
+		return new Point(x, y);
 	}
 	
 	public Point getChunk()
