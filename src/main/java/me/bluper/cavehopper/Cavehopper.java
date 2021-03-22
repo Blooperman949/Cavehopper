@@ -17,7 +17,7 @@ public class Cavehopper
 {
 	public static Cavehopper game;
 	public static final String NAMESPACE = "cavehopper";
-	public static final String VERSION = "WorldGen Test 0.1.2";
+	public static final String VERSION = "WorldGen Test 0.1.3";
 	boolean running;
 	int tr = 20;
 	
@@ -31,8 +31,6 @@ public class Cavehopper
 	
 	public TextureSheet blockTextures;
 	int blockRes = 8;
-	public TextureSheet skyTextures;
-	int skyRes = 64;
 	
 	public void run()
 	{
@@ -72,10 +70,12 @@ public class Cavehopper
 	
 	void tick()
 	{
-		if (gw.getKeyDown(87)) level.getLevelRenderer().getCamera().removeY(2.8f);
-		if (gw.getKeyDown(83)) level.getLevelRenderer().getCamera().addY(2.8f);
-		if (gw.getKeyDown(65)) level.getLevelRenderer().getCamera().removeX(2.8f);
-		if (gw.getKeyDown(68)) level.getLevelRenderer().getCamera().addX(2.8f);
+		float speed = 0.8f;
+		if (gw.getKeyDown(16)) speed = 6.0f;
+		if (gw.getKeyDown(87)) level.getLevelRenderer().getCamera().removeY(speed);
+		if (gw.getKeyDown(83)) level.getLevelRenderer().getCamera().addY(speed);
+		if (gw.getKeyDown(65)) level.getLevelRenderer().getCamera().removeX(speed);
+		if (gw.getKeyDown(68)) level.getLevelRenderer().getCamera().addX(speed);
 		if (gw.getKeyDown(69)) level.generateInRange(rd, level.getLevelRenderer().getCamera().getCenterBlock().getChunk());
 	}
 	
@@ -95,8 +95,6 @@ public class Cavehopper
 		{
 			blockTextures = new TextureSheet("assets/cavehopper/textures/block/", blockRes*8, blockRes, this);
 			logger.log("Finished loading textures: Blocks");
-			skyTextures = new TextureSheet("assets/cavehopper/textures/sky/", skyRes*4, skyRes, this);
-			logger.log("Finished loading textures: Skies");
 		}
 		catch (IOException | URISyntaxException e) { logger.logException(e); }
 		texts = new Texts("en_us", game);		

@@ -17,7 +17,7 @@ public class Blocks extends HashMap<String, Block>
 	public Blocks(Cavehopper game)
 	{
 		try {
-			for (@SuppressWarnings("unused") URL u : Resources.getResourceURLs(Resources.class, new ResourceURLFilter()
+			for (URL u : Resources.getResourceURLs(Resources.class, new ResourceURLFilter()
 			{
 				@Override public boolean accept(URL u)
 				{

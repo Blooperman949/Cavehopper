@@ -48,7 +48,7 @@ public class LevelRenderer
 		String text = camPos.toString();
 		if (cc != null) text += " in " + new WorldPos(cc.getX(), cc.getY()).toString();
 		if (cc != null && cc.getBlocks().containsKey(camPos.getPosInChunk())) text += " Block: " + cc.getBlock(camPos.getPosInChunk()).getId();
-		g.drawString(text, w/3, h/3);
+		g.drawString(text, w/3+5, h/3+15);
 		return out;
 	}
 	

@@ -19,7 +19,10 @@ public class WorldPos extends Point
 	
 	public Point getChunk()
 	{
-		return new Point(x/32, y/32);
+		int x, y;
+		x = this.x < 0 ? this.x/32-1 : this.x/32;
+		y = this.y < 0 ? this.y/32-1 : this.y/32;
+		return new Point(x, y);
 	}
 	
 	public Point getPosOnScreen(int w, int h, float orX, float orY, int res)

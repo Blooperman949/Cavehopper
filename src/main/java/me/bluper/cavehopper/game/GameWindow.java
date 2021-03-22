@@ -52,13 +52,13 @@ public class GameWindow extends JFrame implements KeyListener
 	@Override
 	public void keyPressed(KeyEvent e) 
 	{
-		keys[e.getKeyCode()] = true;
-//		System.out.println(e.getKeyCode());
+		if (e.getKeyCode() < keys.length-1) keys[e.getKeyCode()] = true;
+//		game.getLogger().log(e.getKeyCode());
 	}
 	@Override
 	public void keyReleased(KeyEvent e) 
 	{
-		keys[e.getKeyCode()] = false;
+		if (e.getKeyCode() < keys.length-1) keys[e.getKeyCode()] = false;
 	}
 	@Override
 	public void keyTyped(KeyEvent e) 

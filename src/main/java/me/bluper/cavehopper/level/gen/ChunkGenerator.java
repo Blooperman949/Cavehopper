@@ -25,13 +25,13 @@ public class ChunkGenerator
 			{
 				Block block = blocks.get("air");
 				Point pos = new Point(i, j);
-				if (j == 0 && i == 0) block = blocks.get("air");
-				else if (y >= 0)
+				if (y >= 0)
 				{
 					if (j < rand.nextInt(32) & y == 0) block = blocks.get("silt");
 					else block = blocks.get("crumbrock");
 				}
 				else block = blocks.get("silt");
+//				if (j == 0 && i == 0) block = blocks.get("air");
 				chunk.setBlock(pos, new Block(block, i, j));
 			}
 		}

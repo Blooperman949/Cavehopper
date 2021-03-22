@@ -15,21 +15,27 @@ public class Level
 	
 	public Level()
 	{
-		generateInRange(game.rd, game.spawn.getChunk());
+		generateInRange(game.rd*2, game.spawn.getChunk());
 		lr = new LevelRenderer(game);
 	}
 	
 	public void generateInRange(int range, Point origin)
 	{
-		game.getLogger().log("Generating chunks in range " + range + " around chunk (" + origin.x + ", " + origin.y + ")");
+		game.getLogger().log("Generating Chunks...");
+		String text = "";
 		for (int i = origin.x-range; i < origin.x+range; i++)
 		{
 			for (int j = origin.y-range; j < origin.y+range; j++)
 			{
 				Point p = new Point(i, j);
-				if (!chunks.containsKey(p)) putChunk(p, cg.generateChunk(i, j, game.getBlocks()));
+				if (!chunks.containsKey(p))
+				{
+					putChunk(p, cg.generateChunk(i, j, game.getBlocks()));
+					text += "(" + i + ", " + j + ") ";
+				}
 			}
 		}
+		game.getLogger().log("Generated chunks around chunk (" + origin.x + ", " + origin.y + ") in range " + range + ": [ " + text + "]");
 	}
 	
 	void putChunk(Point pos, Chunk chunk)

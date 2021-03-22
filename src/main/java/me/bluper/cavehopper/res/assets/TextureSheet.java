@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 
 import me.bluper.cavehopper.Cavehopper;
 import me.bluper.cavehopper.game.GameLogger;
