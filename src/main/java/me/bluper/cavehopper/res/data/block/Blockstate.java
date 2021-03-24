@@ -25,4 +25,12 @@ public class Blockstate
 		states[stateid] = state;
 		return this;
 	}
+	
+	@Override
+	public String toString()
+	{
+		String out = "Blockstate: [ ";
+		for (boolean i : states) out += i + " ";
+		return out + "]";
+	}
 }

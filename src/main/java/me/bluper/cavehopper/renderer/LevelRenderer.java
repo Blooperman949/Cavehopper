@@ -18,13 +18,13 @@ public class LevelRenderer
 	HashMap<Point, BufferedImage> chunks = new HashMap<Point, BufferedImage>();
 	Cavehopper game;
 	Camera c;
-	
+
 	public LevelRenderer(Cavehopper game)
 	{
 		this.game = game;
 		c = new Camera(game, game.spawn);
 	}
-	
+
 	public BufferedImage render(float x, float y, Level level)
 	{
 		w = game.getWindow().getWidth();
@@ -42,27 +42,35 @@ public class LevelRenderer
 				g.drawImage(chunks.get(new Point(i.getX(), i.getY())), WorldPos.getXOnScreen(i.getX()*32, w, x, res), WorldPos.getYOnScreen(i.getY()*32, h, y, res), null);
 			}
 		}
+
+		//info text
 		WorldPos camPos = new WorldPos((int) x, (int) y);
 		Chunk cc = null;
 		if(level.getChunks().containsKey(camPos.getChunk())) cc = level.getChunk(camPos);
 		String text = "World: " + camPos.toString();
 		if (cc != null) text += " Chunk: " + new WorldPos(cc.getX(), cc.getY()).toString() + ", " + new WorldPos(camPos.getPosInChunk());
-		if (cc != null && cc.getBlocks().containsKey(camPos.getPosInChunk())) text += " Block: " + cc.getBlock(camPos.getPosInChunk()).getId();
+		if (cc != null && cc.getBlocks().containsKey(camPos.getPosInChunk()))
+		{
+			text += " Block: " + cc.getBlock(camPos.getPosInChunk()).getId();
+			g.drawString(cc.getBlock(camPos.getPosInChunk()).getState().toString(), w/3+5, h/3+28);
+		}
 		g.drawString(text, w/3+5, h/3+15);
+
 		return out;
 	}
-	
+
 	public BufferedImage renderChunk(Chunk chunk)
 	{
+		chunk.update();
 		int res = game.blockTextures.getRes();
-		BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage out = new BufferedImage(res*32, res*32, BufferedImage.TYPE_INT_ARGB);
 		Graphics g = out.createGraphics();
 		for (Block b : chunk.getBlocks().values())
 		{
-			g.drawImage(game.blockTextures.getTextureByName(b.getId()), (b.getX()*res), (b.getY()*res), null);
+			if (!b.getId().equals("air")) g.drawImage(game.blockTextures.getBlockTextureByName(b.getId(), b.getState()), (b.getX()*res), (b.getY()*res), null);
 		}
 		return out;
 	}
-	
+
 	public Camera getCamera() { return c == null ? new Camera(game, game.spawn) : c; }
 }

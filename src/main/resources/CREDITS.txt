@@ -1,2 +1,3 @@
 Textures by jtn050, edited for game by Bluperman949
-Code by Bluperman949
+OpenSimplex noise algorithm by KdotJPG
+The rest of the code by Bluperman949

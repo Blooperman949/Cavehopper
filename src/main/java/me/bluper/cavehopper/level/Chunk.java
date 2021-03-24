@@ -4,6 +4,8 @@ import java.awt.Point;
 import java.util.HashMap;
 
 import me.bluper.cavehopper.res.data.block.Block;
+import me.bluper.cavehopper.res.data.block.Blockstate;
+import static me.bluper.cavehopper.Cavehopper.game;
 
 
 public class Chunk
@@ -24,6 +26,25 @@ public class Chunk
 			for (int j = 0; j < 32; j++)
 			{
 				blocks.put(new Point(i, j), new Block(block, i, j));
+			}
+		}
+	}
+	
+	public void update()
+	{
+		game.getLogger().log("Updating Chunk: (" + x + ", " + y + ") ");
+		for (Block b : blocks.values())
+		{
+			if (b.getX() > 0 && b.getY() > 0 && b.getX() < 31 && b.getY() < 31)
+			{
+				if (this.getBlock(new Point(b.getX(), b.getY()-1)).getId().equals(b.getId())) b.setState(Blockstate.CON_UP, true);
+				else b.setState(Blockstate.CON_UP, false);
+				if (this.getBlock(new Point(b.getX(), b.getY()+1)).getId().equals(b.getId())) b.setState(Blockstate.CON_DOWN, true);
+				else b.setState(Blockstate.CON_DOWN, false);
+				if (this.getBlock(new Point(b.getX()-1, b.getY())).getId().equals(b.getId())) b.setState(Blockstate.CON_LEFT, true);
+				else b.setState(Blockstate.CON_LEFT, false);
+				if (this.getBlock(new Point(b.getX()+1, b.getY())).getId().equals(b.getId())) b.setState(Blockstate.CON_RIGHT, true);
+				else b.setState(Blockstate.CON_RIGHT, false);
 			}
 		}
 	}

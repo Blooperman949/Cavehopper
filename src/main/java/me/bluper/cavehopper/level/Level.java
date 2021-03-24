@@ -10,7 +10,7 @@ import me.bluper.cavehopper.renderer.LevelRenderer;
 public class Level
 {
 	HashMap<Point, Chunk> chunks = new HashMap<Point, Chunk>();
-	ChunkGenerator cg = new ChunkGenerator(0);
+	ChunkGenerator cg = new ChunkGenerator(0, game);
 	LevelRenderer lr;
 	
 	public Level()
@@ -23,6 +23,7 @@ public class Level
 	{
 		game.getLogger().log("Generating Chunks...");
 		String text = "";
+		int c = 0;
 		for (int i = origin.x-range; i < origin.x+range; i++)
 		{
 			for (int j = origin.y-range; j < origin.y+range; j++)
@@ -32,10 +33,11 @@ public class Level
 				{
 					putChunk(p, cg.generateChunk(i, j, game.getBlocks()));
 					text += "(" + i + ", " + j + ") ";
+					c++;
 				}
 			}
 		}
-		game.getLogger().log("Generated chunks around chunk (" + origin.x + ", " + origin.y + ") in range " + range + ": [ " + text + "]");
+		game.getLogger().log("Generated " + c + " chunks around chunk (" + origin.x + ", " + origin.y + ") in range " + range + ": [ " + text + "]");
 	}
 	
 	void putChunk(Point pos, Chunk chunk)
@@ -56,5 +58,10 @@ public class Level
 	public Chunk getChunk(WorldPos pos)
 	{
 		return chunks.get(pos.getChunk());
+	}
+	
+	public Chunk getChunk(Point pos)
+	{
+		return chunks.get(pos);
 	}
 }

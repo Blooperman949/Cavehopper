@@ -11,23 +11,26 @@ import me.bluper.cavehopper.level.Level;
 import me.bluper.cavehopper.level.WorldPos;
 import me.bluper.cavehopper.res.assets.Texts;
 import me.bluper.cavehopper.res.assets.TextureSheet;
+import me.bluper.cavehopper.res.data.biome.Biomes;
 import me.bluper.cavehopper.res.data.block.Blocks;
 
 public class Cavehopper
 {
 	public static Cavehopper game;
 	public static final String NAMESPACE = "cavehopper";
-	public static final String VERSION = "WorldGen Test 0.1.3";
+	public static final String VERSION = "WorldGen Test 0.2.3";
 	boolean running;
 	int tr = 20;
 	
 	public Level level;
 	public final int rd = 2;
+	public final int biomeSize = 100;
 	public WorldPos spawn = new WorldPos(16, 16);
 	GameLogger logger = new GameLogger("");
+	GameWindow gw;
 	Texts texts;
 	Blocks blocks;
-	GameWindow gw;
+	Biomes biomes;
 	
 	public TextureSheet blockTextures;
 	int blockRes = 8;
@@ -57,7 +60,11 @@ public class Cavehopper
 		logger.log("Initializing...");
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable()
 		{
-			@Override public void run() { logger.close(); }
+			@Override public void run()
+			{
+				logger.log("Shutting Down...");
+				logger.close();
+			}
 		} ));
 		loadAssets();
 		loadData();
@@ -93,7 +100,7 @@ public class Cavehopper
 	{
 		try
 		{
-			blockTextures = new TextureSheet("assets/cavehopper/textures/block/", blockRes*8, blockRes, this);
+			blockTextures = new TextureSheet("assets/cavehopper/textures/block/", 8, blockRes, this, 4);
 			logger.log("Finished loading textures: Blocks");
 		}
 		catch (IOException | URISyntaxException e) { logger.logException(e); }
@@ -104,6 +111,7 @@ public class Cavehopper
 	void loadData()
 	{
 		blocks = new Blocks(game);
+		biomes = new Biomes(game);
 	}
 	
 	public static void main(String args[])
@@ -119,4 +127,5 @@ public class Cavehopper
 	public GameLogger getLogger() { return logger; }
 	public Texts getTexts() { return texts; }
 	public Blocks getBlocks() { return blocks; }
+	public Biomes getBiomes() { return biomes; }
 }
