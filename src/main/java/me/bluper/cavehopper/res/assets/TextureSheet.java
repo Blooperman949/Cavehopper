@@ -5,7 +5,6 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -16,17 +15,22 @@ import java.util.HashMap;
 import javax.imageio.ImageIO;
 
 import me.bluper.cavehopper.Cavehopper;
+import me.bluper.cavehopper.block.Block;
 import me.bluper.cavehopper.game.GameLogger;
+import me.bluper.cavehopper.level.BlockPos;
+import me.bluper.cavehopper.level.Level;
 import me.bluper.cavehopper.res.ResourceURLFilter;
 import me.bluper.cavehopper.res.Resources;
-import me.bluper.cavehopper.res.data.block.Blockstate;
+import me.bluper.cavehopper.util.Direction;
 
 public class TextureSheet
 {
 	BufferedImage sheet;
 	HashMap<String, Point> map;
 	private int res;
-	private int scale;
+	private int scalex;
+	private int scaley;
+	private Cavehopper game = Cavehopper.getInstance();
 	GameLogger logger;
 
 	/**
@@ -39,7 +43,7 @@ public class TextureSheet
 	 * @throws IOException 
 	 * @throws URISyntaxException 
 	 */
-	public TextureSheet(String path, int size, int res, Cavehopper game, int scale) throws IOException, URISyntaxException
+	public TextureSheet(String path, int size, int res, int sheetScale, int scalex, int scaley) throws IOException, URISyntaxException
 	{
 		logger = game.getLogger();
 		ArrayList<URL> files = new ArrayList<URL>();
@@ -56,74 +60,135 @@ public class TextureSheet
 		}
 
 		this.res = res;
-		this.scale = scale;
+		this.scalex = scalex;
+		this.scaley = scaley;
 		map = new HashMap<String, Point>((int) (Math.pow(size, 2)));
-		size = size*res*scale;
-		sheet = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+		sheet = new BufferedImage(size*res*sheetScale, size*res*sheetScale, BufferedImage.TYPE_INT_ARGB);
 		Point currentPos = new Point();
 		Graphics g = sheet.getGraphics();
 
 		for(URL f : files)
 		{
-			g.drawImage(ImageIO.read(f).getScaledInstance(res*scale, res*scale, Image.SCALE_FAST), currentPos.x, currentPos.y, null);
+			g.drawImage(ImageIO.read(f).getScaledInstance(res*scalex, res*scaley, Image.SCALE_FAST), currentPos.x, currentPos.y, null);
 			File texPath = new File(f.getFile());
 			String texName = texPath.getName().substring(0, texPath.getName().length()-4);
 			map.put(texName, new Point(currentPos.x, currentPos.y));
-			if (currentPos.x < size - res) currentPos.x += res*scale;
-			else if (currentPos.y < size - res)
+			if (currentPos.x <= sheetScale*res*scalex - res) currentPos.x += res*scalex;
+			else if (currentPos.y < sheetScale*res*scaley - res)
 			{
 				currentPos.x = 0;
-				currentPos.y += res*scale;
+				currentPos.y += res*scaley;
 			}
 			else break;
 			logger.log("Stitching Texture \"" + texName + "\" at (" + map.get(texName).x + ", " + map.get(texName).y + ") from " + f);
 		}
-		ImageIO.write((RenderedImage) this.getSheet(), "PNG", new File("C:/Users/s-CDOOLITTLE/Downloads/sheet.png"));
+//		ImageIO.write((RenderedImage) this.getSheet(), "PNG", new File("sheet.png"));
+//		ImageIO.write((RenderedImage) this.getTextureByName("crumbrock"), "PNG", new File("crumbrock.png"));
 	}
 
 	/**
 	 * @param texture The name of the texture.
 	 * @return The texture in the sheet with the specified name.
 	 */
-	public Image getTextureByName(String texture)
+	private Image getTextureByName(String texture)
 	{
 		Image out;
 		if (map.containsKey(texture)) 
-			out = sheet.getSubimage(map.get(texture).x, map.get(texture).y, res*scale, res*scale);
+			out = sheet.getSubimage(map.get(texture).x, map.get(texture).y, res*scalex, res*scaley);
 		else
 		{
-			out = new BufferedImage(res, res, BufferedImage.TYPE_INT_RGB);
+			out = new BufferedImage(res*scalex, res*scaley, BufferedImage.TYPE_INT_RGB);
 			Graphics g = out.getGraphics();
 			g.setColor(Color.MAGENTA);
-			g.fillRect(0, 0, res*scale, res*scale);
+			g.fillRect(0, 0, res*scalex, res*scaley);
 		}
 		return out;
 	}
-	
-	public Image getBlockTextureByName(String texture, Blockstate state)
+
+	public Image getBlockTexture(String texture, boolean connected)
 	{
 		BufferedImage out = (BufferedImage) getTextureByName(texture);
-		if(scale == 4)
+		return connected ?
+				out.getSubimage(0, 0, res, res) : out.getSubimage(res, 0, res, res);
+	}
+
+	public Image getBlockTexture(String texId, BlockPos pos, Level level, boolean wall)
+	{
+		BufferedImage out = (BufferedImage) getTextureByName(texId);
+		if(scalex == 4 && scaley == 4)
 		{
-			boolean up = state.get(Blockstate.CON_UP);
-			boolean right = state.get(Blockstate.CON_RIGHT);
-			boolean down = state.get(Blockstate.CON_DOWN);
-			boolean left = state.get(Blockstate.CON_LEFT);
-			
-			if (up && right && down && left) out = out.getSubimage(0, 0, res, res);
-			if (!up && !right && !down && !left) out = out.getSubimage(res, 0, res, res);
-			if (up && !right && down && !left) out = out.getSubimage(0, res, res, res);
-			if (!up && right && !down && left) out = out.getSubimage(res, res, res, res);
-			if (!up && right && down && left) out = out.getSubimage(res*2, 0, res, res);
-			if (up && !right && down && left) out = out.getSubimage(res*3, 0, res, res);
-			if (up && right && !down && left) out = out.getSubimage(res*2, res, res, res);
-			if (up && right && down && !left) out = out.getSubimage(res*3, res, res, res);
-			if (up && !right && !down && !left) out = out.getSubimage(0, res*3, res, res);
-			if (!up && right && !down && !left) out = out.getSubimage(res, res*2, res, res);
-			if (!up && !right && down && !left) out = out.getSubimage(0, res*2, res, res);
-			if (!up && !right && !down && left) out = out.getSubimage(res, res*3, res, res);
+			Block block;
+			boolean exists = level.getChunks().containsKey(pos.getChunk());
+//			boolean sameUp;
+			boolean sameRight;
+			boolean sameDown;
+//			boolean sameLeft;
+			boolean solidUp;
+//			boolean solidRight;
+//			boolean solidDown;
+			boolean solidLeft;
+			if (wall)
+			{
+				block = level.getWall(pos);
+//				sameUp = level.getWall(pos.offset(Direction.UP.get())) == block && exists;
+				sameRight = level.getWall(pos.offset(Direction.RIGHT.get())) == block && exists;
+				sameDown = level.getWall(pos.offset(Direction.DOWN.get())) == block && exists;
+//				sameLeft = level.getWall(pos.offset(Direction.LEFT.get())) == block && exists;
+				solidUp = level.getWall(pos.offset(Direction.UP.get())).getProperties().getSolid() && exists;
+//				solidRight = level.getWall(pos.offset(Direction.RIGHT.get())).getProperties().getSolid() && exists;
+//				solidDown = level.getWall(pos.offset(Direction.DOWN.get())).getProperties().getSolid() && exists;
+				solidLeft = level.getWall(pos.offset(Direction.LEFT.get())).getProperties().getSolid() && exists;
+			}
+			else
+			{
+				block = level.getBlock(pos);
+//				sameUp = level.getBlock(pos.offset(0, -1)) == block && exists;
+				sameRight = level.getBlock(pos.offset(1, 0)) == block && exists;
+				sameDown = level.getBlock(pos.offset(0, 1)) == block && exists;
+//				sameLeft = level.getBlock(pos.offset(-1, 0)) == block && exists;
+				solidUp = level.getBlock(pos.offset(0, -1)).getProperties().getSolid() && exists;
+//				solidRight = level.getBlock(pos.offset(1, 0)).getProperties().getSolid() && exists;
+//				solidDown = level.getBlock(pos.offset(0, 1)).getProperties().getSolid() && exists;
+				solidLeft = level.getBlock(pos.offset(-1, 0)).getProperties().getSolid() && exists;
+			}
+
+			if (!solidUp && !sameRight && !sameDown && !solidLeft)
+				out = out.getSubimage(res, 0, res, res);
+			else if (!solidUp && sameRight && !sameDown && solidLeft)
+				out = out.getSubimage(0, res, res, res);
+			else if (solidUp && !sameRight && sameDown && !solidLeft)
+				out = out.getSubimage(res, res, res, res);
+
+			else if (!solidUp && !sameRight && sameDown && !solidLeft)
+				out = out.getSubimage(0, res*2, res, res);
+			else if (!solidUp && !sameRight && !sameDown && solidLeft)
+				out = out.getSubimage(res, res*2, res, res);
+			else if (solidUp && !sameRight && !sameDown && !solidLeft)
+				out = out.getSubimage(0, res*3, res, res);
+			else if (!solidUp && sameRight && !sameDown && !solidLeft)
+				out = out.getSubimage(res, res*3, res, res);
+
+			else if (solidUp && !sameRight && !sameDown && solidLeft)
+				out = out.getSubimage(res*2, res*2, res, res);
+			else if (solidUp && sameRight && !sameDown && !solidLeft)
+				out = out.getSubimage(res*3, res*2, res, res);
+			else if (!solidUp && sameRight && sameDown && !solidLeft)
+				out = out.getSubimage(res*2, res*3, res, res);
+			else if (!solidUp && !sameRight && sameDown && solidLeft)
+				out = out.getSubimage(res*3, res*3, res, res);
+
+			else if (!solidUp && sameRight && sameDown && solidLeft)
+				out = out.getSubimage(res*2, 0, res, res);
+			else if (solidUp && !sameRight && sameDown && solidLeft)
+				out = out.getSubimage(res*3, 0, res, res);
+			else if (solidUp && sameRight && !sameDown && solidLeft)
+				out = out.getSubimage(res*2, res, res, res);
+			else if (solidUp && sameRight && sameDown && !solidLeft)
+				out = out.getSubimage(res*3, res, res, res);
+
+			else out = out.getSubimage(0, 0, res, res);
 		}
-			
+
 		return out;
 	}
 

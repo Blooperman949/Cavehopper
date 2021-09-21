@@ -17,9 +17,10 @@ public class GameLogger
 	
 	public GameLogger(String logLoc)
 	{
-		this.logLoc = new File(logLoc + "log.txt");
+		this.logLoc = new File(logLoc + "logs/log-" + LocalDate.now() + "-" + (System.currentTimeMillis() + ".txt").substring(6));
 		try
 		{
+			new File(logLoc + "logs").mkdirs();
 			writer = new FileWriter(this.logLoc);
 			reader = new FileReader(this.logLoc);
 		}

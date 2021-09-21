@@ -8,9 +8,11 @@ import me.bluper.cavehopper.Cavehopper;
 public class Texts
 {
 	Properties prop = new Properties();
+	Cavehopper game;
 	
-	public Texts(String lang, Cavehopper game)
+	public Texts(String lang)
 	{
+		game = Cavehopper.getInstance();
 		try
 		{
 			prop.load(getClass().getClassLoader().getResourceAsStream("assets/cavehopper/lang/" + lang + ".properties"));
